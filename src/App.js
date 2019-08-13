@@ -50,8 +50,8 @@ function App() {
   }
 
   // Handling event for clicking the numbers buttons, 0-9 and .
-  function numbersClick(event) {
-    if (display.length < 15) {
+  function numbersClick(event){
+    if (display.toString().length < 15 || total.lastOp) {
       // Replaces current display with next button if the display is initialized/a calculation.
       if (isCalculated) {
         setCalcState(false);
