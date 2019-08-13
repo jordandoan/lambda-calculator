@@ -51,23 +51,25 @@ function App() {
 
   // Handling event for clicking the numbers buttons, 0-9 and .
   function numbersClick(event) {
-    // Replaces current display with next button if the display is initialized/a calculation.
-    if (isCalculated) {
-      setCalcState(false);
-      display = "";
-    }
-    // Clicking the decimal will prevent a second decimal click
-    if (event.target.textContent  == "." && !usedDecimal) {
-      setDecimalState(true);
-      setDisplayState(display + event.target.textContent);
-    // All numbers. Adds numbers to current display
-    } else if (event.target.textContent != ".") {
-      setDisplayState(display + event.target.textContent);
+    if (display.length < 15) {
+      // Replaces current display with next button if the display is initialized/a calculation.
+      if (isCalculated) {
+        setCalcState(false);
+        display = "";
+      }
+      // Clicking the decimal will prevent a second decimal click
+      if (event.target.textContent  == "." && !usedDecimal) {
+        setDecimalState(true);
+        setDisplayState(display + event.target.textContent);
+      // All numbers. Adds numbers to current display
+      } else if (event.target.textContent != ".") {
+        setDisplayState(display + event.target.textContent);
+      }
     }
   }
 
   // Handler event for clicking an operation button
-  function opClick (event) { 
+  function opClick (event) {
     total.recent = Number(display); // Most recent value is current display 
     total.value = calculate();
     total.lastOp = event.target.value;
