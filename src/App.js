@@ -15,16 +15,24 @@ function App() {
   // Your functions should accept a parameter of the the item data being displayed to the DOM (ie - should recieve 5 if the user clicks on
   // the "5" button, or the operator if they click one of those buttons) and then call your setter function to update state.
   // Don't forget to pass the functions (and any additional data needed) to the components as props
-  let [display, setDisplayState] = useState("0")
-  let [isCalculated, setCalcState] = useState(true);
-  let [usedDecimal, setDecimalState] = useState(false);
-  let [total, setTotalState] = useState({value:0, recent:0, lastOp:null});
+  let [display, setDisplayState] = useState("0") // Current Display on calculator
+  let [isCalculated, setCalcState] = useState(true); // Checks for recent calculation/initializing, replacing the current display
+  let [usedDecimal, setDecimalState] = useState(false); // Prevents from using 2 decimals in one number
+  let [total, setTotalState] = useState({value:0, recent:0, lastOp:null}); // Keeps track of most recent operation clicked, the current total 
+  // the calculation, and the most recent number entered before the operation.
+
+  // Reset occurs when hitting equals or % sign. Reset means that the calculator will act like it was just opened for the first time
+  // forgetting about the calculation it just did. Entering in a number after a reset will erase the current display
   function reset(){
     setCalcState(true);
     setDecimalState(false);
     setTotalState({value:0, recent:0, lastOp:null});
   }
   let operators = ["/", "*", "-","+","="];
+
+  // Will calculate the number based off the most recent operation saved.
+  // Calculate occurs when clicking a second or more operator. For example: 2+3+ will calculate the new total as 5.
+  // Returns the recent value if the last operator is null, which means it is the first operator in the calculation.
   function calculate(){
     if (total.lastOp) {
       if (total.lastOp == "+") {
@@ -41,47 +49,50 @@ function App() {
     }
   }
 
+  // Handling event for clicking the numbers buttons, 0-9 and .
   function numbersClick(event) {
+    // Replaces current display with next button if the display is initialized/a calculation.
     if (isCalculated) {
       setCalcState(false);
       display = "";
     }
+    // Clicking the decimal will prevent a second decimal click
     if (event.target.textContent  == "." && !usedDecimal) {
       setDecimalState(true);
       setDisplayState(display + event.target.textContent);
+    // All numbers. Adds numbers to current display
     } else if (event.target.textContent != ".") {
       setDisplayState(display + event.target.textContent);
     }
   }
 
+  // Handler event for clicking an operation button
   function opClick (event) { 
-    if(!operators.includes(display[display.length - 1])) {
-      setCalcState(false);
-      total.recent = Number(display);
-      total.value = calculate();
-      total.lastOp = event.target.value;
-      console.log(total);
-      setDisplayState(total.value);
-      setCalcState(true);
-      setDecimalState(false);
-      if (event.target.value == "=") {
-        console.log(total);
-        setDisplayState(total.value);
-        reset();
-      }
+    total.recent = Number(display); // Most recent value is current display 
+    total.value = calculate();
+    total.lastOp = event.target.value;
+    setDisplayState(total.value); // Shows current total value when chaining operators
+    setCalcState(true); // Will replace display with next number clicked
+    setDecimalState(false); // Allows for decimals again since we are starting a new number
+    if (event.target.value == "=") {
+      // Allows for reset, or can continue adding to current sum
+      reset();
     }
   }
-
+  // Handler event for clicking the special buttons
   function specialsClick(event){
+    // Reset to 0
     if (event.target.textContent == "C") {
       reset();
       setDisplayState(0);
+    // Switches current number to negative/positive
     } else if (event.target.textContent == "+/-") {
       if (display[0] == "-") {
         setDisplayState(display.substring(1));
       } else { 
         setDisplayState("-" + display);
       }
+    // Turns current display into a decimal
     } else {
       setDisplayState(display/100);
       reset();
